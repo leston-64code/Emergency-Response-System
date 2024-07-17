@@ -1,13 +1,21 @@
 import Navbar from './components/Navbar'
+import EventDetailsPage from './pages/EventDetailsPage'
 import Home from './pages/Home'
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 
 function App() {
 
 
   return (
     <>
-      <Navbar />
-      <Home />
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path='/eventpage' element={<EventDetailsPage />} />
+          <Route path='' element={<Home />} />
+        </Routes>
+      </Router>
     </>
   )
 }
