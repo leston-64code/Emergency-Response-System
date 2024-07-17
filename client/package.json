@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "flowbite-react": "^0.10.0",
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.81.1",
