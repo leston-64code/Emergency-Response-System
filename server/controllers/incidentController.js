@@ -1,12 +1,23 @@
 const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
 const Incident = require("../models/Incident");
 const ErrorHandler = require("../utils/ErrorHandler");
+const axios = require("axios")
 
 exports.createIncident = catchAsyncErrors(async (req, res, next) => {
+
     let files = req.files.map((ele) => {
         return ele.filename
     })
     req.body.images = files
+
+    let location = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${req.body.latitude}&lon=${req.body.longitude}&format=json`)
+
+    const address = Object.fromEntries(
+        Object.entries(location.data.address).filter(([key]) => key !== 'ISO3166-2-lvl4')
+    );
+
+    req.body.address = address
+
     const incident = await Incident.create(req.body);
     if (incident != null) {
         return res.status(200).json({
@@ -51,7 +62,16 @@ exports.deleteIncident = catchAsyncErrors(async (req, res, next) => {
 exports.getOneIncident = catchAsyncErrors(async (req, res, next) => {
     const { id } = req.params;
     const incident = await Incident.findById(id);
+
     if (incident != null) {
+
+
+        let files = incident.images.map((ele, index) => {
+            return `${req.protocol}://${req.get('host')}/images/${ele}`
+        })
+
+        incident.images = files
+
         return res.status(200).json({
             success: true,
             incident
@@ -73,10 +93,12 @@ exports.getAllIncidents = catchAsyncErrors(async (req, res, next) => {
                 // firstImage: incident.images.length > 0 ? `${req.protocol}://${req.get('host')}/images/${path.posix.join('uploads', incident.images[0])}` : null,
                 thumbnail: incident.images.length > 0 ? `${req.protocol}://${req.get('host')}/images/${incident.images[0]}` : null,
                 volunteerCount: incident.volunteerCount,
-                volunteers: incident.volunteers
+                volunteers: incident.volunteers,
+                address: incident.address,
+                _id: incident._id
             };
         });
-        console.log(formattedIncidents)
+
         return res.status(200).json({
             success: true,
             incidentsCount,

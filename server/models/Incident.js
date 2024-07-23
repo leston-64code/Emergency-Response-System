@@ -26,7 +26,30 @@ var incidentSchema = new mongoose.Schema({
         {
             type: String
         }
-    ]
+    ],
+    address:{
+        city: {
+            type: String
+        },
+        county: {
+            type: String
+        },
+        state_district: {
+            type: String
+        },
+        state: {
+            type: String
+        },
+        postcode: {
+            type: String
+        },
+        country: {
+            type: String
+        },
+        country_code: {
+            type: String
+        }
+    }
 },
     {
         timestamps: true

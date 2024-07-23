@@ -13,7 +13,7 @@ const Home = () => {
             try {
                 const response = await axios.get(`${getBaseUrl()}/api/incident/getall`);
                 setIncidents(response.data.incidents);
-                console.log(incidents)
+                // console.log(incidents)
             } catch (error) {
                 console.error('Error fetching incidents:', error);
             }

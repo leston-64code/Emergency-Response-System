@@ -13,7 +13,7 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path='/eventpage' element={<EventDetailsPage />} />
+          <Route path='/eventpage/:id' element={<EventDetailsPage />} />
           <Route path='/admin/*' element={<Admin />} />
           <Route path='' element={<Home />} />
         </Routes>
