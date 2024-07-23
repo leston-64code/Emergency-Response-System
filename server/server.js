@@ -1,42 +1,58 @@
-const express = require("express")
-const connectDB = require("./config/db")
-const errorMiddleware = require("./middlewares/errorMiddleware")
-const morgan = require("morgan")
-const helmet = require("helmet")
-const cors = require("cors")
+const express = require("express");
+const connectDB = require("./config/db");
+const errorMiddleware = require("./middlewares/errorMiddleware");
+const morgan = require("morgan");
+const helmet = require("helmet");
+const cors = require("cors");
 const path = require('path');
+const fs = require("fs");
+const https = require("https");
 
-const app = express()
-require("dotenv").config()
+const app = express();
+require("dotenv").config();
 
-connectDB()
+// Connect to the database
+connectDB();
 
+// Load SSL certificates
+const options = {
+    key: fs.readFileSync('./localhost-key.pem'),
+    cert: fs.readFileSync('./localhost.pem')
+};
+
+// CORS Configuration
 app.use(cors({
-    origin: `${process.env.CLIENT_ADDRESS}`,
+    origin: process.env.CLIENT_ADDRESS, // Ensure this is correctly set in your .env file
     credentials: true,
-}))
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 
+// CORP Header Configuration
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    next();
+});
 
-// Middlewares
+// Middleware
 app.use(morgan("dev"));
-app.use(express.json())
-app.use(helmet())
+app.use(express.json());
+// app.use(helmet());
 
-
+// Serve static files
 app.use('/images', express.static(path.join(__dirname, 'uploads')));
-console.log(path.join(__dirname,"uploads"))
-app.use("/api/user", require("./routes/UserRotues"))
-app.use("/api/incident", require("./routes/IncidentRoutes"))
 
+// Routes
+app.use("/api/user", require("./routes/UserRotues"));
+app.use("/api/incident", require("./routes/IncidentRoutes"));
 
+// Error handling middleware
+app.use(errorMiddleware);
 
-app.use(errorMiddleware)
-
-const PORT = process.env.PORT || 4000
-
-const server = app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
-})
+// Start the HTTPS server
+const PORT = process.env.PORT || 4000;
+https.createServer(options, app).listen(PORT, () => {
+    console.log(`Server is running on https://localhost:${PORT}`);
+});
 
 // Gracefully handle unexpected errors
 process.on('uncaughtException', err => {

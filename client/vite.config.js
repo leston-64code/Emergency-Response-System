@@ -1,10 +1,8 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
 import fs from 'fs';
 import path from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -12,7 +10,15 @@ export default defineConfig({
       key: fs.readFileSync(path.resolve(__dirname, 'localhost-key.pem')),
       cert: fs.readFileSync(path.resolve(__dirname, 'localhost.pem')),
     },
-    host: 'localhost', // Ensure the server runs on localhost
-    port: 3000 // Optional: specify the port
+    host: 'localhost',
+    port: 3000,
+    proxy: {
+      '/images': {
+        target: 'https://localhost:3001',
+        changeOrigin: true,
+        secure: false, // Set to true in production if using HTTPS
+        rewrite: (path) => path.replace(/^\/images/, '/images'),
+      }
+    }
   }
-})
+});

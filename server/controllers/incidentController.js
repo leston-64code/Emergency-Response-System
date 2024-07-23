@@ -71,7 +71,7 @@ exports.getAllIncidents = catchAsyncErrors(async (req, res, next) => {
                 latitude: incident.latitude,
                 longitude: incident.longitude,
                 // firstImage: incident.images.length > 0 ? `${req.protocol}://${req.get('host')}/images/${path.posix.join('uploads', incident.images[0])}` : null,
-                firstImage: incident.images.length > 0 ? `${req.protocol}://${req.get('host')}/images/${incident.images[0]}` : null,
+                thumbnail: incident.images.length > 0 ? `${req.protocol}://${req.get('host')}/images/${incident.images[0]}` : null,
                 volunteerCount: incident.volunteerCount,
                 volunteers: incident.volunteers
             };

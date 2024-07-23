@@ -23,15 +23,16 @@ const Home = () => {
     }, []);
 
     return (
-        <div className='flex flex-row flex-wrap space-x-5 justify-evenly space-y-5'>
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
+        <>
+            <div className='flex flex-row flex-wrap space-x-5 justify-evenly space-y-5'>
+                {
+                    incidents?.map((ele, index) => {
+                        return <Card incident={ele} key={index} />
+                    })
+                }
+            </div>
             <PostEmergency />
-        </div>
+        </>
     )
 }
 
