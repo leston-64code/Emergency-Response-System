@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 
 var incidentSchema = new mongoose.Schema({
-    lat: {
+    latitude: {
         type: Number,
         required: true
     },
-    long: {
+    longitude: {
         type: Number,
         required: true
     },

@@ -111,9 +111,9 @@
 
 import { useState } from 'react';
 import { Button, Label, Modal, TextInput } from 'flowbite-react';
-import { FileInput } from 'flowbite-react';
 import MapComponent from './MapComponent';
 import axios from 'axios';
+import { getBaseUrl } from '../utils/getBaseUrl';
 
 const PostEmergency = () => {
     const [openModal, setOpenModal] = useState(true);
@@ -121,6 +121,7 @@ const PostEmergency = () => {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
+        volunteerCount: '',
         files: []
     });
     const [imagePreviews, setImagePreviews] = useState([]);
@@ -141,24 +142,27 @@ const PostEmergency = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(coordinates)
         const data = new FormData();
         data.append('name', formData.name);
         data.append('phone', formData.phone);
-        data.append('latitude', coordinates.latitude);
-        data.append('longitude', coordinates.longitude);
+        data.append('volunteerCount', formData.volunteerCount);
+        data.append('latitude', coordinates.lat);
+        data.append('longitude', coordinates.lng);
 
         for (let i = 0; i < formData.files.length; i++) {
             data.append('files', formData.files[i]);
         }
 
         try {
-            const response = await axios.post('/api/emergency', data, {
+            const response = await axios.post(`${getBaseUrl()}/api/incident/createincident`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            console.log('Success:', response.data);
-            setOpenModal(false);
+            // console.log('Success:', response.data);
+            // setOpenModal(false);
+            console.log(response)
         } catch (error) {
             console.error('Error:', error);
         }
@@ -183,6 +187,12 @@ const PostEmergency = () => {
                                 <Label htmlFor="phone" value="Enter your phone no" />
                             </div>
                             <TextInput id="phone" type="text" placeholder="Your phone number" required onChange={handleInputChange} />
+                        </div>
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="volunteerCount" value="Approximate volunteer count" />
+                            </div>
+                            <TextInput id="volunteerCount" type="text" placeholder="Enter volunteer count" required onChange={handleInputChange} />
                         </div>
                         <div>
                             <div className="mb-2 block">

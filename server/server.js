@@ -4,6 +4,7 @@ const errorMiddleware = require("./middlewares/errorMiddleware")
 const morgan = require("morgan")
 const helmet = require("helmet")
 const cors = require("cors")
+const path = require('path');
 
 const app = express()
 require("dotenv").config()
@@ -21,6 +22,9 @@ app.use(morgan("dev"));
 app.use(express.json())
 app.use(helmet())
 
+
+app.use('/images', express.static(path.join(__dirname, 'uploads')));
+console.log(path.join(__dirname,"uploads"))
 app.use("/api/user", require("./routes/UserRotues"))
 app.use("/api/incident", require("./routes/IncidentRoutes"))
 

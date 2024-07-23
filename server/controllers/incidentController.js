@@ -3,6 +3,10 @@ const Incident = require("../models/Incident");
 const ErrorHandler = require("../utils/ErrorHandler");
 
 exports.createIncident = catchAsyncErrors(async (req, res, next) => {
+    let files = req.files.map((ele) => {
+        return ele.filename
+    })
+    req.body.images = files
     const incident = await Incident.create(req.body);
     if (incident != null) {
         return res.status(200).json({
@@ -10,6 +14,11 @@ exports.createIncident = catchAsyncErrors(async (req, res, next) => {
             message: "Incident created",
             incident
         });
+    } else {
+        return res.status(400).json({
+            success: false,
+            tpye: "MANUAL",
+        })
     }
 });
 
@@ -53,15 +62,28 @@ exports.getOneIncident = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.getAllIncidents = catchAsyncErrors(async (req, res, next) => {
-    const incidents = await Incident.find();
-    const incidentsCount = await Incident.countDocuments();
-    if (incidents != null) {
+    try {
+        const incidents = await Incident.find();
+        const incidentsCount = await Incident.countDocuments();
+
+        const formattedIncidents = incidents.map(incident => {
+            return {
+                latitude: incident.latitude,
+                longitude: incident.longitude,
+                // firstImage: incident.images.length > 0 ? `${req.protocol}://${req.get('host')}/images/${path.posix.join('uploads', incident.images[0])}` : null,
+                firstImage: incident.images.length > 0 ? `${req.protocol}://${req.get('host')}/images/${incident.images[0]}` : null,
+                volunteerCount: incident.volunteerCount,
+                volunteers: incident.volunteers
+            };
+        });
+        console.log(formattedIncidents)
         return res.status(200).json({
             success: true,
             incidentsCount,
-            incidents
+            incidents: formattedIncidents
         });
-    } else {
+    } catch (error) {
         return next(new ErrorHandler("There was some issue", 400));
     }
 });
+
